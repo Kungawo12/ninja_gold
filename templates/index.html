@@ -16,9 +16,18 @@
 </head>
 <body onload="scrollToBottom()">
     <div class="container bg-dark p-5">
+        {%if result == "win"%}
+            <h3  class="font-weight-bold"style="color: antiquewhite;">You won! Play Again</h3>
+        {%elif result == "lose"%}
+            <h3  class="font-weight-bold" style="color:aquamarine;">You lose!! Try Again..</h3>
+        {%endif%}
         <h1 class="text-primary">Your Gold: 
         <input type="text" class="rounded form-control-md" name="gold_count" value={{session.total_gold}}></h1>
-        <a href="/reset" name="reset">Reset</a>
+        <h6 class="btn btn-outline-light">
+            {%if result %}
+            <a href="/reset" name="reset">reset</a>
+            {%endif%}
+        </h6>
     <div class="card-holder d-flex justify-content-evenly align-items-center py-5">
         <div class="card bg-primary p-4 text-dark ">
             <h3 class="text-center">Farm</h3>

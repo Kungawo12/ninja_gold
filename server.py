@@ -5,31 +5,42 @@ app = Flask(__name__)
 app.secret_key = "Life Is Good."
 @app.route('/')
 def index():
+    
     if "total_gold" not in session:
         session["total_gold"] = 0
     if 'activities' not in session:
         session['activities']= []
-    return render_template('index.html',total_gold=session['total_gold'],activities=session['activities'])
-
-
+    result = check_result(session["total_gold"],len(session['activities']))
+    
+    return render_template('index.html',total_gold=session['total_gold'],activities=session['activities'],result=result)
 
 def new_activities(activity):
     current_date_time =datetime.now().strftime("%m-%d-%Y %-I:%M %p")
     formatted_activity = f"{activity} ({current_date_time})"
     session['activities'].append(formatted_activity)
-
+def check_result(total_gold,num_moves):
+    if total_gold >= 500 and num_moves<=15:
+        return 'win'
+    if num_moves> 15:
+        return 'lose'
+    else:
+        None
 @app.route('/farm')
 def farm():
     gold_earn = random.randint(10,20)
     session['total_gold'] += gold_earn
     new_activities(f'Earned {gold_earn} golds from the farm!')
     return render_template('farm.html',gold_earn=gold_earn,total_gold= session['total_gold'])
+
+
 @app.route('/cave')
 def cave():
     gold_earn = random.randint(5,10)
     session['total_gold'] += gold_earn
     new_activities(f'Earned {gold_earn} golds from the cave!')
     return render_template('cave.html',gold_earn=gold_earn,total_gold= session['total_gold'])
+
+
 @app.route('/house')
 def house():
     gold_earn = random.randint(2,5)
@@ -37,7 +48,9 @@ def house():
     new_activities(f'Earned {gold_earn} golds from the house!')
     return render_template('house.html',gold_earn=gold_earn,total_gold= session['total_gold'])
 
+
 @app.route('/casino')
+
 def casino():
     gold_earn = random.choice(list(range(0, 50)))
     gold_lose = random.choice(list(range(0, 50)))
@@ -47,6 +60,8 @@ def casino():
     session['total_gold'] += gold_earn
     session['total_gold'] -= gold_lose
     return render_template('casino.html',gold_earn=gold_earn,gold_lose=gold_lose,random_choice=random_choice,total_gold=session['total_gold'],activities=session['activities'])
+
+
 @app.route('/process_money', methods=['POST'])
 def process_money():
     location = request.form.get('location')
